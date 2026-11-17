@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { APP_CONFIG } from "@/lib/constants";
@@ -71,9 +72,17 @@ export const useAuthUser = () => useAuthStore((state) => state.user);
 export const useIsAuthenticated = () => useAuthStore((state) => state.isAuthenticated);
 export const useAuthHasHydrated = () => useAuthStore((state) => state._hasHydrated);
 
-export const useAuthActions = () =>
-  useAuthStore((state) => ({
-    login: state.login,
-    logout: state.logout,
-    updateUser: state.updateUser,
-  }));
+export const useAuthActions = () => {
+  const login = useAuthStore((state) => state.login);
+  const logout = useAuthStore((state) => state.logout);
+  const updateUser = useAuthStore((state) => state.updateUser);
+
+  return useMemo(
+    () => ({
+      login,
+      logout,
+      updateUser,
+    }),
+    [login, logout, updateUser]
+  );
+};
