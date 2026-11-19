@@ -36,10 +36,10 @@ export const step1Schema = z.object({
   description: z
     .string()
     .trim()
-    .min(
-      COURSE_LIMITS.DESCRIPTION_MIN,
-      `Description must be at least ${COURSE_LIMITS.DESCRIPTION_MIN} characters.`
-    ),
+    .refine((val) => {
+      const plainText = val.replace(/<[^>]*>/g, "").trim();
+      return plainText.length >= COURSE_LIMITS.DESCRIPTION_MIN;
+    }, `Description must be at least ${COURSE_LIMITS.DESCRIPTION_MIN} characters.`),
   category: z.string().min(1, "Please select a category."),
 });
 

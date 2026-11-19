@@ -31,11 +31,7 @@ export const DEFAULT_COURSE_FORM_VALUES: CreateCourseFormState = {
     "Master production-grade modern web architecture with hands-on projects and real-world tools.",
   coverImage: null,
   videoLink: "",
-  description: `In this section, your goal is to motivate potential students to purchase the course. What valuable knowledge will they gain? What opportunities will they miss if they don't enroll? Why is now the perfect time to sign up?
-Use bullet points to:
-• Outline the key learning outcomes
-• Describe the impacts of the course
-• Illustrate how their life will be enhanced by taking the course`,
+  description: `<p>In this section, your goal is to motivate potential students to purchase the course. What valuable knowledge will they gain? What opportunities will they miss if they don't enroll? Why is now the perfect time to sign up?</p><p><strong>Use bullet points to:</strong></p><ul><li>Outline the key learning outcomes</li><li>Describe the impacts of the course</li><li>Illustrate how their life will be enhanced by taking the course</li></ul>`,
   category: "Web Development",
   pricingType: "paid",
   actualPrice: "9999",

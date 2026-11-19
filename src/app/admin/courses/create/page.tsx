@@ -7,18 +7,8 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Upload,
-  Link as LinkIcon,
-  Bold,
-  Italic,
-  Underline,
-  List,
-  ListOrdered,
-  AlignLeft,
-  AlignCenter,
   Image as ImageIcon,
   Video,
-  Undo2,
-  Redo2,
   Check,
   CheckCircle2,
   Sparkles,
@@ -30,7 +20,13 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
-import { COURSE_LIMITS, COURSE_CATEGORIES, ACCESS_DURATION_OPTIONS } from "../constants";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
+import {
+  COURSE_LIMITS,
+  COURSE_CATEGORIES,
+  ACCESS_DURATION_OPTIONS,
+  DEFAULT_COURSE_FORM_VALUES,
+} from "../constants";
 import { step1Schema, step2Schema } from "../schemas";
 import { calculateDiscountPercentage, getAccessDurationLabel } from "../utils";
 import type { PricingType, AccessType, PublishStatus } from "../types";
@@ -41,27 +37,33 @@ export default function CreateCoursePage() {
   // Wizard Step: 1 = Page Details, 2 = Pricing & Access, 3 = Review & Publish
   const [currentStep, setCurrentStep] = useState(1);
 
-  // Form State
-  const [courseTitle, setCourseTitle] = useState("Join my all new course");
+  // Form State initialized with defaults
+  const [courseTitle, setCourseTitle] = useState(DEFAULT_COURSE_FORM_VALUES.courseTitle);
   const [courseSubheading, setCourseSubheading] = useState(
-    "Master production-grade modern web architecture with hands-on projects and real-world tools."
+    DEFAULT_COURSE_FORM_VALUES.courseSubheading
   );
-  const [coverImage, setCoverImage] = useState<string | null>(null);
-  const [videoLink, setVideoLink] = useState("");
-  const [description, setDescription] = useState(
-    `In this section, your goal is to motivate potential students to purchase the course. What valuable knowledge will they gain? What opportunities will they miss if they don't enroll? Why is now the perfect time to sign up?\nUse bullet points to:\n• Outline the key learning outcomes\n• Describe the impacts of the course\n• Illustrate how their life will be enhanced by taking the course`
+  const [coverImage, setCoverImage] = useState<string | null>(
+    DEFAULT_COURSE_FORM_VALUES.coverImage
   );
-  const [category, setCategory] = useState("Web Development");
+  const [videoLink, setVideoLink] = useState(DEFAULT_COURSE_FORM_VALUES.videoLink);
+  const [description, setDescription] = useState(DEFAULT_COURSE_FORM_VALUES.description);
+  const [category, setCategory] = useState(DEFAULT_COURSE_FORM_VALUES.category);
 
   // Pricing & Access State
-  const [pricingType, setPricingType] = useState<PricingType>("paid");
-  const [actualPrice, setActualPrice] = useState("9999");
-  const [discountPrice, setDiscountPrice] = useState("4999");
-  const [accessType, setAccessType] = useState<AccessType>("lifetime");
-  const [accessDurationDays, setAccessDurationDays] = useState("365");
+  const [pricingType, setPricingType] = useState<PricingType>(
+    DEFAULT_COURSE_FORM_VALUES.pricingType
+  );
+  const [actualPrice, setActualPrice] = useState(DEFAULT_COURSE_FORM_VALUES.actualPrice);
+  const [discountPrice, setDiscountPrice] = useState(DEFAULT_COURSE_FORM_VALUES.discountPrice);
+  const [accessType, setAccessType] = useState<AccessType>(DEFAULT_COURSE_FORM_VALUES.accessType);
+  const [accessDurationDays, setAccessDurationDays] = useState(
+    DEFAULT_COURSE_FORM_VALUES.accessDurationDays
+  );
 
   // Publishing State
-  const [publishStatus, setPublishStatus] = useState<PublishStatus>("published");
+  const [publishStatus, setPublishStatus] = useState<PublishStatus>(
+    DEFAULT_COURSE_FORM_VALUES.publishStatus
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -426,146 +428,23 @@ export default function CreateCoursePage() {
             )}
           </div>
 
-          {/* Description with Rich Text Editor Toolbar */}
+          {/* Description with Interactive Rich Text Editor */}
           <div className="space-y-2">
             <label className="text-xs font-semibold text-slate-700">
               Detailed Description (Rich Text) <span className="text-rose-500">*</span>
             </label>
 
-            <div
-              className={`border rounded-xl overflow-hidden focus-within:ring-1 transition-all ${
-                formErrors.description
-                  ? "border-rose-400 focus-within:border-rose-500 focus-within:ring-rose-500"
-                  : "border-slate-200 focus-within:border-slate-900 focus-within:ring-slate-900"
-              }`}
-            >
-              {/* Toolbar */}
-              <div className="bg-slate-50 border-b border-slate-200 p-2 flex flex-wrap items-center gap-1 text-slate-700 select-none">
-                <button
-                  type="button"
-                  title="Bold"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors font-bold cursor-pointer"
-                >
-                  <Bold className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  title="Underline"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors underline cursor-pointer"
-                >
-                  <Underline className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  title="Italic"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors italic cursor-pointer"
-                >
-                  <Italic className="w-4 h-4" />
-                </button>
+            <RichTextEditor
+              value={description}
+              onChange={(content) => {
+                setDescription(content);
+                if (formErrors.description) {
+                  setFormErrors((prev) => ({ ...prev, description: "" }));
+                }
+              }}
+              error={formErrors.description}
+            />
 
-                <div className="h-4 w-px bg-slate-300 mx-1" />
-
-                <button
-                  type="button"
-                  title="Bullet List"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <List className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  title="Numbered List"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <ListOrdered className="w-4 h-4" />
-                </button>
-
-                <div className="h-4 w-px bg-slate-300 mx-1" />
-
-                <button
-                  type="button"
-                  title="Align Left"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <AlignLeft className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  title="Align Center"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <AlignCenter className="w-4 h-4" />
-                </button>
-
-                <div className="h-4 w-px bg-slate-300 mx-1" />
-
-                <button
-                  type="button"
-                  title="Insert Link"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <LinkIcon className="w-4 h-4" />
-                </button>
-
-                <select
-                  className="bg-transparent text-xs text-slate-700 border-none focus:outline-none cursor-pointer px-1 py-1 font-medium"
-                  defaultValue="14px"
-                >
-                  <option value="12px">12px</option>
-                  <option value="14px">14px</option>
-                  <option value="16px">16px</option>
-                  <option value="18px">18px</option>
-                </select>
-
-                <div className="h-4 w-px bg-slate-300 mx-1" />
-
-                <button
-                  type="button"
-                  title="Insert Image"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <ImageIcon className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  title="Insert Video"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <Video className="w-4 h-4" />
-                </button>
-
-                <div className="h-4 w-px bg-slate-300 mx-1" />
-
-                <button
-                  type="button"
-                  title="Undo"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <Undo2 className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  title="Redo"
-                  className="p-1.5 rounded hover:bg-slate-200/70 text-slate-700 transition-colors cursor-pointer"
-                >
-                  <Redo2 className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Textarea */}
-              <textarea
-                rows={8}
-                value={description}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                  if (formErrors.description) {
-                    setFormErrors((prev) => ({ ...prev, description: "" }));
-                  }
-                }}
-                placeholder="Outline what students will learn, who should enroll, and key outcomes..."
-                className="w-full p-4 text-xs sm:text-sm text-slate-800 focus:outline-none resize-y leading-relaxed font-sans"
-              />
-            </div>
             {formErrors.description && (
               <p className="text-[11px] font-medium text-rose-600">{formErrors.description}</p>
             )}
@@ -957,7 +836,14 @@ export default function CreateCoursePage() {
                   {courseSubheading}
                 </p>
 
-                <p className="text-xs text-slate-500 line-clamp-2">{description}</p>
+                <p className="text-xs text-slate-500 line-clamp-2">
+                  {description
+                    ? description
+                        .replace(/<[^>]*>/g, " ")
+                        .replace(/\s+/g, " ")
+                        .trim()
+                    : ""}
+                </p>
 
                 <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-700 font-medium">
                   <span className="flex items-center gap-1">

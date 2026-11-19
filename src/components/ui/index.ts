@@ -9,3 +9,4 @@ export * from "./Table";
 export * from "./DataTable";
 export * from "./Modal";
 export * from "./StatCard";
+export * from "./RichTextEditor";
