@@ -6,5 +6,6 @@ export * from "./SearchInput";
 export * from "./Select";
 export * from "./MultiSelect";
 export * from "./Table";
+export * from "./DataTable";
 export * from "./Modal";
 export * from "./StatCard";

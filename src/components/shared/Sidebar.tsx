@@ -12,7 +12,6 @@ import {
   BarChart3,
   Settings,
   HelpCircle,
-  Sparkles,
   LogOut,
   PanelLeftClose,
   PanelLeft,
@@ -186,25 +185,6 @@ export const Sidebar: React.FC = () => {
 
         {/* Bottom Section */}
         <div className="p-3 space-y-3">
-          {/* Plan Banner */}
-          {!isCollapsed && (
-            <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-3.5 space-y-2">
-              <div className="flex items-center gap-2 text-slate-900 font-semibold text-xs">
-                <Sparkles className="w-3.5 h-3.5 text-slate-900" />
-                <span>Enterprise Active</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
-                Enjoy full access to LMS course creator & unlimited leads.
-              </p>
-              <button
-                type="button"
-                className="w-full text-center bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium py-1.5 px-3 rounded-lg transition-colors cursor-pointer"
-              >
-                Manage Plan
-              </button>
-            </div>
-          )}
-
           {/* User Profile Footer */}
           <div
             className={`border-t border-slate-100 pt-3 flex items-center justify-between ${

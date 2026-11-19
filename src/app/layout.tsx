@@ -14,9 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next.js + TypeScript Starter Template",
-  description:
-    "Production-ready Next.js + TypeScript starter template featuring Zustand, TanStack Query, and native Fetch API architecture.",
+  title: "LearnKaro Admin Panel",
+  description: "Enterprise LMS administrative dashboard platform.",
 };
 
 export default function RootLayout({
@@ -26,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -1,128 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { Plus, Users, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { Select } from "@/components/ui/Select";
-import { MultiSelect } from "@/components/ui/MultiSelect";
 import { Badge } from "@/components/ui/Badge";
-import { Modal } from "@/components/ui/Modal";
-
-interface Course {
-  id: string;
-  title: string;
-  instructor: string;
-  category: string;
-  price: string;
-  studentsCount: number;
-  lessonsCount: number;
-  tags: string[];
-  status: "Published" | "Draft" | "Archived";
-}
+import { INITIAL_COURSES, COURSE_CATEGORIES } from "./constants";
+import type { Course } from "./types";
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([
-    {
-      id: "crs-01",
-      title: "Full Stack Next.js 16 & React 19 Mastery",
-      instructor: "Rahul Sharma",
-      category: "Web Development",
-      price: "₹4,999",
-      studentsCount: 3840,
-      lessonsCount: 48,
-      tags: ["Next.js", "React", "TypeScript", "Tailwind"],
-      status: "Published",
-    },
-    {
-      id: "crs-02",
-      title: "GenAI & Agentic Systems Engineering",
-      instructor: "Dr. Arvind Rao",
-      category: "Artificial Intelligence",
-      price: "₹7,499",
-      studentsCount: 2190,
-      lessonsCount: 36,
-      tags: ["Python", "LangChain", "LLMs", "VectorDB"],
-      status: "Published",
-    },
-    {
-      id: "crs-03",
-      title: "System Design & Distributed Architectures",
-      instructor: "Nikhil Joshi",
-      category: "Backend & Systems",
-      price: "₹5,999",
-      studentsCount: 1650,
-      lessonsCount: 42,
-      tags: ["Kafka", "Redis", "Microservices", "Scalability"],
-      status: "Published",
-    },
-    {
-      id: "crs-04",
-      title: "Enterprise UI/UX with Figma & Design Tokens",
-      instructor: "Tanvi Kapoor",
-      category: "Design",
-      price: "₹3,499",
-      studentsCount: 890,
-      lessonsCount: 28,
-      tags: ["Figma", "Design Systems", "Prototyping"],
-      status: "Draft",
-    },
-  ]);
+  const [courses] = useState<Course[]>(INITIAL_COURSES);
 
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Form State
-  const [newCourse, setNewCourse] = useState({
-    title: "",
-    instructor: "",
-    category: "Web Development",
-    price: "",
-    tags: ["Next.js", "React"],
-    status: "Published" as Course["status"],
-  });
-
-  const availableTags = [
-    { value: "Next.js", label: "Next.js" },
-    { value: "React", label: "React" },
-    { value: "TypeScript", label: "TypeScript" },
-    { value: "Python", label: "Python" },
-    { value: "LLMs", label: "LLMs" },
-    { value: "Docker", label: "Docker" },
-    { value: "Kubernetes", label: "Kubernetes" },
-    { value: "System Design", label: "System Design" },
-    { value: "Figma", label: "Figma" },
-  ];
-
-  const handleCreateCourse = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCourse.title || !newCourse.price) return;
-
-    const created: Course = {
-      id: `crs-${Date.now()}`,
-      title: newCourse.title,
-      instructor: newCourse.instructor || "Rahul Sharma",
-      category: newCourse.category,
-      price: newCourse.price.startsWith("₹") ? newCourse.price : `₹${newCourse.price}`,
-      studentsCount: 0,
-      lessonsCount: 12,
-      tags: newCourse.tags,
-      status: newCourse.status,
-    };
-
-    setCourses([created, ...courses]);
-    setIsModalOpen(false);
-    setNewCourse({
-      title: "",
-      instructor: "",
-      category: "Web Development",
-      price: "",
-      tags: ["Next.js", "React"],
-      status: "Published",
-    });
-  };
 
   const filteredCourses = courses.filter((c) => {
     const matchesSearch =
@@ -144,13 +36,11 @@ export default function CoursesPage() {
           </p>
         </div>
 
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          leftIcon={<Plus className="w-4 h-4" />}
-          size="sm"
-        >
-          Create Course
-        </Button>
+        <Link href="/admin/courses/create">
+          <Button leftIcon={<Plus className="w-4 h-4" />} size="sm">
+            Create Course
+          </Button>
+        </Link>
       </div>
 
       {/* Filter and Search Bar */}
@@ -168,10 +58,10 @@ export default function CoursesPage() {
           <Select
             options={[
               { value: "all", label: "All Categories" },
-              { value: "web development", label: "Web Development" },
-              { value: "artificial intelligence", label: "AI & ML" },
-              { value: "backend & systems", label: "Backend & Systems" },
-              { value: "design", label: "Design" },
+              ...COURSE_CATEGORIES.map((cat) => ({
+                value: cat.toLowerCase(),
+                label: cat,
+              })),
             ]}
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
@@ -201,7 +91,7 @@ export default function CoursesPage() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-1.5 mt-3">
-                {c.tags.map((tag) => (
+                {c.tags?.map((tag) => (
                   <span
                     key={tag}
                     className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/60"
@@ -231,87 +121,6 @@ export default function CoursesPage() {
           </div>
         ))}
       </div>
-
-      {/* Create Course Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Create New Course"
-        description="Enter curriculum details to publish or save as draft."
-        maxWidth="lg"
-      >
-        <form onSubmit={handleCreateCourse} className="space-y-4">
-          <Input
-            label="Course Title"
-            placeholder="e.g. Master Clean Architecture in TypeScript"
-            value={newCourse.title}
-            onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
-            required
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Instructor Name"
-              placeholder="e.g. Rahul Sharma"
-              value={newCourse.instructor}
-              onChange={(e) => setNewCourse({ ...newCourse, instructor: e.target.value })}
-            />
-            <Input
-              label="Price (INR)"
-              placeholder="e.g. 4999"
-              value={newCourse.price}
-              onChange={(e) => setNewCourse({ ...newCourse, price: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Select
-              label="Category"
-              options={[
-                { value: "Web Development", label: "Web Development" },
-                { value: "Artificial Intelligence", label: "Artificial Intelligence" },
-                { value: "Backend & Systems", label: "Backend & Systems" },
-                { value: "Design", label: "Design" },
-              ]}
-              value={newCourse.category}
-              onChange={(e) => setNewCourse({ ...newCourse, category: e.target.value })}
-            />
-
-            <Select
-              label="Initial Status"
-              options={[
-                { value: "Published", label: "Published" },
-                { value: "Draft", label: "Draft" },
-              ]}
-              value={newCourse.status}
-              onChange={(e) =>
-                setNewCourse({
-                  ...newCourse,
-                  status: e.target.value as Course["status"],
-                })
-              }
-            />
-          </div>
-
-          <MultiSelect
-            label="Curriculum Tags & Topics"
-            options={availableTags}
-            selectedValues={newCourse.tags}
-            onChange={(tags) => setNewCourse({ ...newCourse, tags })}
-            placeholder="Choose tags for filtering..."
-          />
-
-          <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
-            <Button type="button" variant="outline" size="sm" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" size="sm">
-              Save Course
-            </Button>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 }
